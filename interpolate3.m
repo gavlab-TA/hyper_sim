@@ -3,7 +3,13 @@ function dum = interpolate3(val1l, val1u, val2l, val2u, val3l, val3u, val1, val2
     var1_dim = 6;
     var2_dim = 7;
     var3_dim = 8;
-
+    
+    dx1 = 0;
+    dx2 = 0;
+    dx3 = 0;
+    dumx1 = 0;
+    dumx2 = 0;
+    dumx3 = 0;
     diff1 = val1-val1l;
     diff2 = val2-val2l;
     diff3 = val3-val3l;
@@ -17,6 +23,7 @@ function dum = interpolate3(val1l, val1u, val2l, val2u, val3l, val3u, val1, val2
     else
         dx2 = val2u - val2l;
     end
+    
     if val3l == (var3_dim-1)
         val3u = val3l;
     else
@@ -26,6 +33,7 @@ function dum = interpolate3(val1l, val1u, val2l, val2u, val3l, val3u, val1, val2
     if dx1 > c.EPS
         dumx1 = diff1/dx1;
     end
+    
     if dx2 > c.EPS
         dumx2 = diff2/dx2;
     end

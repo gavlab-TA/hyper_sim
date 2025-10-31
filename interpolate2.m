@@ -1,11 +1,14 @@
 function dum =interpolate2(val1l, val1u, val2l, val2u, val1, val2, y11, y12, y21, y22)
     c = get_constants();
-
+    dx1 = 0;
+    dx2 = 0;
+    dumx1 = 0;
+    dumx2 = 0;
     var1_dim = 6;
     var2_dim = 7;
 
     diff1 = val1-val1l;
-    diff2 = val2-val2u;
+    diff2 = val2-val2l;
 
     if val1l == (var1_dim-1)
         val1u = val1l;
@@ -15,7 +18,7 @@ function dum =interpolate2(val1l, val1u, val2l, val2u, val1, val2, y11, y12, y21
     if val2l == (var2_dim-1)
         val2u = val2l;
     else
-        dx2 = val2u - val1l;
+        dx2 = val2u - val2l;
     end
 
     if dx1 > c.EPS

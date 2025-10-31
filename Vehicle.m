@@ -68,6 +68,7 @@ classdef Vehicle < handle
             obj.gv = i.gv;
             obj.gh = i.gh;
             obj.altdlim = i.altdlim;
+            obj.phi_const = 1;
 
             %other params from input
         end
@@ -122,7 +123,8 @@ classdef Vehicle < handle
                 % temp = lookup2d_interp(s.alphax, s.mach, "cin", obj.dbfile);
                 if obj.mprop == 1
                     s.phi = obj.phi_const;
-                    s.spi = lookup_spi(s.mach, s.phi, s.alphax, obj.dbfile);
+                    
+                    s.spi = lookup3d_interp(s.mach, s.phi, s.alphax, obj.dbfile);
                     s.thrust = .0676*s.phi*s.rho*s.spi*AGRAV*s.dvbe*s.cin*obj.aintake;
                 end
                 if obj.mprop == 2

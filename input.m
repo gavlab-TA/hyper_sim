@@ -1,4 +1,4 @@
-classdef Input < handle
+classdef input < handle
     properties
         %initial conditions
         lonx

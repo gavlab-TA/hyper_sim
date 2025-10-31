@@ -2,10 +2,10 @@ clear;
 clc;
 close all;
 
-table = readtable('plot1.csv');
+% table = readtable("plot.csv");
 
 %example of demo 3.2
-i = Input();
+i = input();
 %%tables
 i.dbfile = "Hyper.db";
 
@@ -99,38 +99,15 @@ for time = 0:dt:100
     w = w+1;
     
 end
-x1r = table.alt;
-x2r = table.dvbe;
-x3r = table.thrust;
-x4r = table.ground_range;
-x5r = table.fmassr;
-x6r = table.latx;
-x7r = table.lonx;
-yr = table.time;
+% x1r = table.alt;
+% x2r = table.dvbe;
+% x3r = table.thrust;
+% x4r = table.ground_range;
+% x5r = table.fmassr;
+% x6r = table.latx;
+% x7r = table.lonx;
+% yr = table.time;
 
-% Plot Altitude
-figure('Name', 'Altitude');
-hold on;
-plot(y, x2, 'r', 'LineWidth', 1.5, 'DisplayName', 'Your Sim');
-plot(yr, x1r, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Expected');
-xlabel('Time (s)');
-ylabel('Altitude (m)');
-legend();
-title('Altitude vs Time');
-grid on;
-hold off;
- 
-% Plot Velocity
-figure('Name', 'Velocity');
-hold on;
-plot(y, x3, 'r', 'LineWidth', 1.5, 'DisplayName', 'Your Sim');
-plot(yr, x2r, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Expected');
-xlabel('Time (s)');
-ylabel('Velocity (m/s)');
-legend();
-title('Velocity vs Time');
-grid on;
-hold off;
 
 
 

@@ -1,6 +1,7 @@
 
 function dum = lookup3d_interp(val1, val2, val3, dbfile)
     
+    
     conn = sqlite(dbfile, 'readonly');
 
 
@@ -24,8 +25,15 @@ function dum = lookup3d_interp(val1, val2, val3, dbfile)
     
     
     %format for query
+    
     val2_up_str = sprintf('%.1f', val2_up);
     val2_down_str = sprintf('%.1f', val2_down);
+    if val2_up == 1
+        val2_up_str = sprintf('%d', val2_up);
+    end
+    if val2_down == 1
+        val2_down_str = sprintf('%d', val2_down);
+    end
 
     q1 = "SELECT spi_sec FROM spi WHERE Mach == " + val1_down + " AND phi == " + val2_down_str + " AND alphax_deg == " + val3_down;
     q2 = "SELECT spi_sec FROM spi WHERE Mach == " + val1_down + " AND phi == " + val2_up_str + " AND alphax_deg == " + val3_down;
@@ -35,7 +43,7 @@ function dum = lookup3d_interp(val1, val2, val3, dbfile)
     q6 = "SELECT spi_sec FROM spi WHERE Mach == " + val1_down + " AND phi == " + val2_up_str + " AND alphax_deg == " + val3_up;
     q7 = "SELECT spi_sec FROM spi WHERE Mach == " + val1_up + " AND phi == " + val2_down_str + " AND alphax_deg == " + val3_up;
     q8 = "SELECT spi_sec FROM spi WHERE Mach == " + val1_up + " AND phi == " + val2_up_str + " AND alphax_deg == " + val3_up;
-
+    
     spi_cell_1 = fetch(conn, q1);
     spi_cell_2 = fetch(conn, q2);
     spi_cell_3 = fetch(conn, q3);
@@ -48,7 +56,12 @@ function dum = lookup3d_interp(val1, val2, val3, dbfile)
     close(conn);
 
 
-    
+    val1_down
+    val1_up
+    val2_up_str
+    val2_down_str
+    val3_up
+    val3_down
     y111 = str2double(spi_cell_1{1,1}); % (down, down, down)
     y112 = str2double(spi_cell_3{1,1}); % (down, up, down)
     y121 = str2double(spi_cell_2{1,1}); % (up, down, down)
