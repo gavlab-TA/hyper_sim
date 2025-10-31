@@ -1,10 +1,10 @@
-function [output] = mat2tr(psivg, thtvg)
-    cpsi = cos(psivg);
-    spsi = sin(psivg);
-    ctht = cos(thtvg);
-    stht = sin(thtvg);
- 
-    output = [cpsi*ctht, ctht*spsi, -stht;
-              -spsi, cpsi, 0;
-              stht*cpsi, spsi*stht, ctht];  
+function tr = mat2tr(psivg, thtvg)
+    a = cos(psivg);
+    b = sin(psivg);
+    c = cos(thtvg);
+    d = sin(thtvg);
+
+    tr = [a*c, c*b, -d;
+          -b, a, 0;
+          d*a, b*d, c];
 end

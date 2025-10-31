@@ -1,63 +1,140 @@
+clear;
+clc;
+close all;
+
+table = readtable('plot1.csv');
+
+%example of demo 3.2
+i = Input();
+%%tables
+i.dbfile = "Hyper.db";
+
+%%initial conditions @ VB_AFB
+i.lonx = -120.6;
+i.latx = 34.7;
+i.alt = 10000;
+i.psivgx = 90;
+i.thtvgx = 0;
+i.dvbe = 1277;
+i.alphax = 0;
+i.phimvx = 0;
+
+%%Aerodynamics
+i.area = 11.6986;
+
+%%Mass properties and propulsion
+i.mprop = 2;
+i.aintake = .184;
+i.mass0 = 1976;
+i.fmass0 = 624;
+i.phi_min = .5;
+i.phi_max = 1.2;
+i.qhold = 72000;
+i.tq = 10;
+i.tlag = 1;
+
+i.mcontrol = 6;
+i.altcom = 10000;
+i.altdlim = 50;
+i.gh = .2;
+i.gv = .3;
+
+i.anposlimx = 2;
+i.anneglimx = -1;
+gacp = 10;
+ta = .8;
+alpposlimx = 6;
+alpneglimx = -4;
+
+%%set rest of params
+
+v = Vehicle(i);
+s = State(i);
 
 
-i = get_init();
-alt = i.alt;
-dvbe = i.dvbe;
-alphax = i.alphax;
-mass0 = i.mass0;
-mass = mass0;
-fmassr = i.fmass0;
-phis = 0;
-phisd = 0;
-fmasse = 0;
-fmassd = 0;
-area = i.area;
-int_step = .01;
-mprop = i.mprop;
-aintake = i.aintake;
-qhold = i.qhold;
-tq = i.tq;
-tlag = i.tlag;
-mcontrol = i.mcontrol;
-psivgcx = i.psivgcx;
-thtvgcx = i.thtvgcx;
-alphacx = i.alphacx;
-ancomx = i.ancomx;
-alcomx = i.alcomx;
-altcom = i.altcom;
-phicx = i.phicx;
-phi = i.phi_min;
-alphax = i.alphax;
-phimvx = i.phimvx;
-
-
-
-[TGV, TIG, WEII, SB0II, VBEG, TGE, SBII, VBII, lonx_l, latx_l, SBEG, ABII] = init_newton(i.dvbe, i.psivgx, i.thtvgx, i.lonx, i.latx, i.alt);
-
-for time = 0:25
-    if time > 5
-        phicx = 30;
-    elseif time > 10
-        phicx = 0;
-    elseif time > 15
-        phicx = -30;
-    elseif time > 20
-        phicx = 0;
+%main loop
+dt = .5;
+t_end = 30;
+num_steps = floor(t_end/dt) + 1;
+x1 = zeros(num_steps, 1);
+x2 = zeros(num_steps,1);
+x3 = zeros(num_steps,1);
+x4 = zeros(num_steps,1);
+x5 = zeros(num_steps,1);
+x6 = zeros(num_steps,1);
+x7 = zeros(num_steps,1);
+x8 = zeros(num_steps, 1);
+x9 = zeros(num_steps,1);
+x10 = zeros(num_steps,1);
+y = zeros(num_steps,1);
+w = 1;
+for time = 0:dt:100
+    
+    if time > 10
+        s.altcom = 10050;
     end
+    if time > 60
+        s.altcom = 10000;
+    end
+    s.update_env(time);
     
-    [grav, rho, pdynmc, mach, vsound] = environment(alt, dvbe, time);
-    [cl, cd, cla, cl_v_cd, cn, ca] = aero(mach, alphax);
-    [phis, phisd, fmasse, fmassd, phi, mass, thrust, mprop, cin, thrst_stoch, spi, mass_flow, fmassr, thrst_req] = prop(mass, fmassr, phis, phisd, fmasse, fmassd, time, rho, pdynmc, mach, dvbe, ca, area, alphax, int_step, mprop, aintake, qhold, tq, tlag, phi);
-    [FSPV] = forces(pdynmc, cl, cd, area, thrust, mass, alphax, phimvx);
-    [SBEG, VBEG, SBII, VBII, ABII, TGV, TIG, psivg, thtvg, alt, ...
-    dvbe, psivgx, thtvgx, lonx, latx, TGE, altx, ground_range] = ...
-    newton(int_step, WEII, lonx_l, latx_l, SBEG, VBEG, SBII, VBII, ABII, ...
-    TGV, TIG, time, FSPV, grav);
-    [phicx, TBV, TBG, alphax, phimvx, ancomx] = control(mcontrol, psivgcx, thtvgcx, alphacx, ancomx, alcomx, altcom, phicx, TGV);
+    v.aero(s);
+    v.prop(s, dt, time);
+    s.FSPV = v.forces(s);
+    v.control(s, dt, time);
     
-    results = [time, rho, pdynmc, mach, lonx, latx, alt, dvbe; ...
-               psivgx, thtvgx, SBEG(1), SBEG(2), SBEG(3), VBEG(1), VBEG(2), VBEG(3); ...
-               ground_range, phi, mass, cin, spi, thrust, fmassr, thrst_req; ...
-               cl, cd, cl_v_cd, cla, cn, ca, mcontrol, 0; ...
-               0, alphax, phimvx, phicx, ancomx, alcomx, mprop, 0];
+    s.update_dynamics(s.FSPV, dt, time);
+    
+    x2(w) = s.alt;
+    x3(w) = s.dvbe;
+    x4(w) = s.ground_range;
+    x5(w) = s.fmassr;
+    x6(w) = s.latx;
+    x7(w) = s.lonx;
+    x8(w) = s.cl;
+    x9(w) = s.cd;
+    x10(w) = s.phi;
+    y(w) = time;
+    
+    w = w+1;
+    
 end
+x1r = table.alt;
+x2r = table.dvbe;
+x3r = table.thrust;
+x4r = table.ground_range;
+x5r = table.fmassr;
+x6r = table.latx;
+x7r = table.lonx;
+yr = table.time;
+
+% Plot Altitude
+figure('Name', 'Altitude');
+hold on;
+plot(y, x2, 'r', 'LineWidth', 1.5, 'DisplayName', 'Your Sim');
+plot(yr, x1r, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Expected');
+xlabel('Time (s)');
+ylabel('Altitude (m)');
+legend();
+title('Altitude vs Time');
+grid on;
+hold off;
+ 
+% Plot Velocity
+figure('Name', 'Velocity');
+hold on;
+plot(y, x3, 'r', 'LineWidth', 1.5, 'DisplayName', 'Your Sim');
+plot(yr, x2r, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Expected');
+xlabel('Time (s)');
+ylabel('Velocity (m/s)');
+legend();
+title('Velocity vs Time');
+grid on;
+hold off;
+
+
+
+
+out = [y, x2, x3, x4, x5, x6, x7, x8, x9, x10];
+
+writematrix(out, 'out.csv');

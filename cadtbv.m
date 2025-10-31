@@ -1,10 +1,10 @@
 function mat = cadtbv(phi, alpha)
-    sa = sin(alpha);
-    ca = cos(alpha);
-    sp = sin(phi);
-    cp = cos(phi);
+    a = sin(alpha);
+    b = cos(alpha);
+    c = sin(phi);
+    d = cos(phi);
 
-    mat = [ca, sp*sa, -cp*sa;
-           0, cp, sp;
-           sa, -sp*ca, cp*ca];
+    mat = [b, c*a, -d*a;
+           0, d, c;
+           a, -c*b, d*b];
 end

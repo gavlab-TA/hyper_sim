@@ -1,5 +1,5 @@
-function dum = lookup2d_interp(val1, val2, wanted)
-    dbfile = 'C:\Users\brayd\GAVLab\matlab\Hyper.db';
+function dum = lookup2d_interp(val1, val2, wanted, dbfile)
+
     conn = sqlite(dbfile);
     
     %round up/down
@@ -30,8 +30,8 @@ function dum = lookup2d_interp(val1, val2, wanted)
     uu = fetch(conn, sqlquery_uu);
     dd = fetch(conn, sqlquery_dd);
     
-    uu = str2double(uu{1,1});
-    dd = str2double(dd{1,1});
+    y22 = str2double(uu{1,1});
+    y11 = str2double(dd{1,1});
     
     sqlquery_ud = "SELECT " + wanted + " FROM " + wanted + " WHERE alphax == " + val1_up_str + ...
                " AND mach == " + val2_down_str;
@@ -42,20 +42,13 @@ function dum = lookup2d_interp(val1, val2, wanted)
     ud = fetch(conn, sqlquery_ud);
     du = fetch(conn, sqlquery_du);
     
-    ud = str2double(ud{1,1});
-    du = str2double(du{1,1});
+    y21 = str2double(ud{1,1});
+    y12 = str2double(du{1,1});
 
-    x_grid = [val1_down, val1_up];
-    y_grid = [val2_down, val2_up];
+    
 
-    matrix = [dd, ud; du, uu];
-
-    xi = val1;
-    yi = val2;
-
-    dum = interp2(x_grid, y_grid, matrix, xi, yi);
+    dum = interpolate2(val1_down, val1_up, val2_down, val2_up, val1, val2, y11, y12, y21, y22);
     close(conn);
 end
-
 
 
